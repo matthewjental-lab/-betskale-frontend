@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>BetsKale - Global Crypto Sportsbook</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="logo">BetsKale</div>
+      <div class="auth" id="authBox">
+        <button id="loginBtn">Login</button>
+        <button id="registerBtn" class="primary">Register</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h1>Global Crypto Sportsbook</h1>
+      <p id="modeBadge">Loading...</p>
+      <div class="wallet-mini" id="walletMini" style="display:none">
+        Balance: $<span id="balMini">0.00</span>
+      </div>
+    </section>
+
+    <section class="filters">
+      <button class="filter-btn active" data-sport="soccer_epl">EPL</button>
+      <button class="filter-btn" data-sport="soccer_uefa_champs_league">UCL</button>
+      <button class="filter-btn" data-sport="basketball_nba">NBA</button>
+      <button class="filter-btn" data-sport="soccer_spain_la_liga">La Liga</button>
+    </section>
+
+    <section class="matches" id="matchList">
+      <div class="loader">Loading matches...</div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="#" onclick="openPage('terms')">Terms</a>
+        <a href="#" onclick="openPage('privacy')">Privacy</a>
+        <a href="#" onclick="openPage('responsible-gaming')">Responsible Gaming</a>
+      </div>
+      <div class="footer-bottom">
+        <p id="licenseFooter">Licensed & Regulated</p>
+        <p>© 2026 BetsKale. 18+ Only. Crypto-only. Bet responsibly.</p>
+      </div>
+    </footer>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-page="sports">Sports</button>
+      <button class="nav-item" data-page="bets">My Bets</button>
+      <button class="nav-item slip">Slip <span id="slipCount">0</span></button>
+      <button class="nav-item" data-page="wallet">Wallet</button>
+      <button class="nav-item" data-page="profile">Profile</button>
+    </nav>
+  </div>
+
+  <!-- Bet Slip Modal -->
+  <div class="modal" id="slipModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Bet Slip <span id="slipCountModal">0</span></h3>
+        <button onclick="closeModal('slipModal')">✕</button>
+      </div>
+      <div class="modal-body" id="slipItems"></div>
+      <div class="modal-footer">
+        <div class="stake-row">
+          <label>Stake USD</label>
+          <input type="number" id="stakeInput" placeholder="0.00" min="1" step="0.01">
+        </div>
+        <div class="total-row">
+          <span>Total Odds: <b id="totalOdds">0.00</b></span>
+          <span>Potential Win: <b id="potentialWin">$0.00</b></span>
+        </div>
+        <button class="place-bet" id="placeBetBtn" onclick="placeBet()">Place Bet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div class="modal" id="authModal">
+    <div class="modal-content" style="max-width:400px;margin:auto">
+      <div class="modal-header"><h3 id="authTitle">Login</h3><button onclick="closeModal('authModal')">✕</button></div>
+      <div class="modal-body">
+        <input type="email" id="authEmail" placeholder="Email" class="input">
+        <input type="password" id="authPass" placeholder="Password" class="input">
+        <div id="authError" class="error"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="place-bet" id="authSubmit">Submit</button>
+        <button class="link-btn" id="authToggle">Need an account? Register</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wallet Modal -->
+  <div class="modal" id="walletModal">
+    <div class="modal-content">
+      <div class="modal-header"><h3>Wallet</h3><button onclick="closeModal('walletModal')">✕</button></div>
+      <div class="modal-body">
+        <div class="balance-box">
+          <div><span>Real Balance</span><b>$<span id="realBal">0.00</span></b></div>
+          <div><span>Demo Coins</span><b id="demoBal">0</b></div>
+        </div>
+        <div class="tabs">
+          <button class="tab active" data-tab="deposit">Deposit</button>
+          <button class="tab" data-tab="withdraw">Withdraw</button>
+          <button class="tab" data-tab="history">History</button>
+        </div>
+        <div class="tab-content" id="depositTab">
+          <label>Amount USD</label>
+          <input type="number" id="depAmount" placeholder="50" min="5" class="input">
+          <label>Select Coin</label>
+          <select id="depCoin" class="input"></select>
+          <button class="place-bet" onclick="createDeposit()">Generate Address</button>
+          <div id="depResult"></div>
+        </div>
+        <div class="tab-content" id="withdrawTab" style="display:none">
+          <div id="kycWarning" style="background:#E63946;padding:12px;border-radius:8px;margin-bottom:12px;display:none">
+            <b>KYC Required</b><br>Verify your identity to withdraw.
+            <button class="place-bet" style="margin-top:8px" onclick="startKYC()">Start Verification</button>
+          </div>
+          <label>Amount USD</label>
+          <input type="number" id="withAmount" placeholder="20" min="20" class="input">
+          <label>Select Coin</label>
+          <select id="withCoin" class="input"></select>
+          <label>Your Wallet Address</label>
+          <input type="text" id="withAddr" placeholder="Wallet address" class="input">
+          <button class="place-bet" onclick="createWithdraw()">Request Withdrawal</button>
+        </div>
+        <div class="tab-content" id="historyTab" style="display:none">
+          <div id="txHistory">Loading...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Bets Modal -->
+  <div class="modal" id="betsModal">
+    <div class="modal-content">
+      <div class="modal-header"><h3>My Bets</h3><button onclick="closeModal('betsModal')">✕</button></div>
+      <div class="modal-body" id="myBetsList">Loading...</div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
